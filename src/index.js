@@ -1,4 +1,3 @@
-// import { fetchBreeds, fetchCatByBreed } from './cat-api';
 import Notiflix from 'notiflix';
 import SlimSelect from 'slim-select';
 import { fetchBreeds, fetchCatByBreed } from './cat-api';
@@ -11,45 +10,46 @@ const catInfo = document.querySelector('.cat-info');
 select.addEventListener('change', onSelectClick);
 loader.classList.add('hidden');
 error.classList.add('hidden');
-catInfo.classList.add('hidden');
 
-// console.log(Object.getPrototypeOf(select));
-// console.log(select.options);
+let arrayInfo = [];
+
+fetchBreeds()
+  .then(resp => {
+    resp.map(el => {
+      arrayInfo.push({ text: el.name, value: el.id });
+    });
+    // console.log(arrayInfo);
+    new SlimSelect({
+      select: '.breed-select',
+      data: arrayInfo,
+    });
+  })
+  .catch(onError);
 
 function onSelectClick(evt) {
-  fetchBreeds(params) // params аргументи для розмітки (опис, фото, темперамент)
-    .then(
-      new SlimSelect({
-        select: '.breed-select',
-      })
-    )
-    .catch(err => {
-      // console.log(err);
-      onError(err);
+  const breedId = evt.target.value;
+  // console.log(breedId);
+
+  fetchCatByBreed(breedId)
+    .then(r => {
+      console.log(r);
+
+      const catData = r.data;
+      console.log(catData);
+
+      return `<img src="${catData.url}" alt="${catData.name} photo" width="410">
+      <h2>Breed: ${catData.name}</h2>
+      <p>Description: ${catData.description}</p>
+      <p>Tempetament: ${catData.tempetament}</p>`;
+    })
+    .then(r => {
+      return (catInfo.innerHTML = r);
     });
 }
 
-// data => (catInfo.innerHTML = createMarkup(dataInfo)) // dataInfo - масив даних для розмітки
-// )
-
-function createMarkup(arr) {
-  return (
-    arr.map(
-      ({}) => `<img src="${'шлях'}" alt="${'порода'}">
-		<h2>${'порода'}</h2>
-		<p>${'опис'}</p>
-    <p>Tempetament: ${'темперамент'}</p>`
-    ),
-    join('')
-  );
-}
 // * * * * * * * * * * * * * * * * * * * * * * *
-function onError(error) {
+function onError(err) {
   Notiflix.Notify.failure(
     'Oops! Something went wrong! Try reloading the page!'
   );
 }
-
-function onLoad(msg) {}
-
-// Notiflix.Notify.info('Loading data, please wait...');
