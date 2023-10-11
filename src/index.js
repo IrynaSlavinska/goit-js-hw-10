@@ -13,10 +13,11 @@ loader.classList.add('hidden');
 error.classList.add('hidden');
 
 let arrayInfo = [];
-let arrayAbout = [];
+// let arrayAbout = [];
 
 fetchBreeds()
   .then(resp => {
+    // console.log(resp);
     resp.map(el => {
       // console.log(el);
       arrayInfo.push({ text: el.name, value: el.id });
@@ -27,13 +28,13 @@ fetchBreeds()
       select: '.breed-select',
       data: arrayInfo,
     });
-    return resp.map(el =>
-      arrayAbout.push({
-        description: el.description,
-        name: el.name,
-        temperament: el.temperament,
-      })
-    );
+    // return resp.map(el =>
+    //   arrayAbout.push({
+    //     description: el.description,
+    //     name: el.name,
+    //     temperament: el.temperament,
+    //   })
+    // );
   })
   .catch(err => {
     Notiflix.Notify.failure(
@@ -43,7 +44,7 @@ fetchBreeds()
 
 function onSelectClick(evt) {
   const breedId = evt.target.value;
-  // console.log(breedId);
+  console.log(breedId);
 
   select.classList.add('hidden');
   loader.classList.remove('hidden');
@@ -52,21 +53,14 @@ function onSelectClick(evt) {
   fetchCatByBreed(breedId)
     .then(r => {
       select.classList.remove('hidden');
-      //     console.log(r);
-      // console.log(arrayAbout);
-
-      const catData = r.data[0];
-      console.log(catData);
-      // console.log(arrayAbout);
-      return `<img src="${r.data.url}" alt="" width="410">`;
-      // <h2>Breed: ${arrayAbout.name}</h2>
-      // <p>Description: ${arrayAbout.description}</p>
-      // <p>Tempetament: ${arrayAbout.tempetament}</p>`;
-    })
-    .then(r => {
       loader.classList.add('hidden');
       catInfo.classList.remove('hidden');
-      return (catInfo.insertAdjacentElement = r);
+      // console.log(r);
+      const catData = r.data[0];
+      console.log(catData);
+      // console.log(catData);
+
+      catInfo.innerHTML = createMarkup(catData);
     })
     .catch(err => {
       select.classList.remove('hidden');
@@ -74,14 +68,16 @@ function onSelectClick(evt) {
       Notiflix.Notify.failure(
         'Oops! Something went wrong! Try reloading the page!'
       );
+      catInfo.classList.add('hidden');
     });
 }
 
 // * * * * * * * * * * * * * * * * * * * * * * *
 
-function createMarkup(url, { name, description, tempetament }) {
-  return `<img src="${url}" alt="" width="410">
+function createMarkup({ url, breeds }) {
+  const { name, description, temperament } = breeds[0];
+  return `<img src="${url}" alt="${name}" width="410">
   <h2>Breed: ${name}</h2>
-  <p>Description: ${description}</p>
-  <p>Tempetament: ${tempetament}</p>`;
+  <p><b>Description</b>: ${description}</p>
+  <p><b>Tempetament</b>: ${temperament}</p>`;
 }
