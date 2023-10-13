@@ -13,11 +13,10 @@ loader.classList.add('hidden');
 error.classList.add('hidden');
 
 let arrayInfo = [];
-// let arrayAbout = [];
 
 fetchBreeds()
   .then(resp => {
-    // console.log(resp);
+    console.log(resp);
     resp.map(el => {
       // console.log(el);
       arrayInfo.push({ text: el.name, value: el.id });
@@ -28,13 +27,6 @@ fetchBreeds()
       select: '.breed-select',
       data: arrayInfo,
     });
-    // return resp.map(el =>
-    //   arrayAbout.push({
-    //     description: el.description,
-    //     name: el.name,
-    //     temperament: el.temperament,
-    //   })
-    // );
   })
   .catch(err => {
     Notiflix.Notify.failure(
